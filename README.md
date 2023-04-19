@@ -157,13 +157,13 @@ Name  | Type (default) | Description
 **placeholder**  | String ('Search...') | Placeholder text.
 **grouped** | Boolean (true) | Show groups in the input and group leafs if all group selected.
 
-#### Callback props
+#### Emits
 Name  | Type (default) | Description
 ------------- | ------------- | -------------
-**onInput** | (value) => void (undefined) | Returns selected values, action is triggered on change the list value.
-**onOpen** | (value) => void (undefined) | Returns selected values, action is triggered on opening the list.
-**onClose** | (value) => void (undefined) | Returns selected values, action is triggered on closing the list.
-**onNameChange** | (name) => void (undefined) | Returns selected name inside the input, action is triggered on on change the list.
+**input** | (value) => void (undefined) | Returns selected values, action is triggered on change the list value.
+**open** | (value) => void (undefined) | Returns selected values, action is triggered on opening the list.
+**close** | (value) => void (undefined) | Returns selected values, action is triggered on closing the list.
+**name-change** | (name) => void (undefined) | Returns selected name inside the input, action is triggered on on change the list.
 
 #### Additional props
 Name  | Type (default) | Description
