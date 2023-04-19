@@ -4,12 +4,12 @@
     ref="treeselectAfterListSlotRef"
     class="treeselect__after-list-slot"
   >
-    <slot name="afterList" />
+    <slot />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, PropType, ref, toRaw, watch } from 'vue'
+import { defineComponent, onMounted, onUnmounted, PropType, ref, toRaw, watch } from 'vue'
 import Treeselect, { IconsType, DirectionType, OptionType, ValueType, ValueInputType } from 'treeselectjs'
 
 export type TreeselectValue = ValueType
@@ -118,18 +118,10 @@ export default defineComponent({
     const treeselectAfterListSlotRef = ref<HTMLElement | null>(null)
     const treeselect = ref<Treeselect | null>(null)
 
-    const onInput = (value: TreeselectValue) => {
-      emit('input', value)
-    }
-    const onOpen = (value: TreeselectValue) => {
-      emit('open', value)
-    }
-    const onClose = (value: TreeselectValue) => {
-      emit('close', value)
-    }
-    const onNameChange = (name: string) => {
-      emit('name-change', name)
-    }
+    const onInput = (value: TreeselectValue) => emit('input', value)
+    const onOpen = (value: TreeselectValue) => emit('open', value)
+    const onClose = (value: TreeselectValue) => emit('close', value)
+    const onNameChange = (name: string) => emit('name-change', name)
 
     watch(
       () => props,
@@ -227,6 +219,13 @@ export default defineComponent({
         listSlotHtmlComponent: treeselectAfterListSlotRef.value ?? null,
         iconElements: props.iconElements
       })
+    })
+
+    onUnmounted(() => {
+      if (treeselect.value) {
+        const rawTreeselect = toRaw(treeselect.value)
+        rawTreeselect.destroy()
+      }
     })
 
     return {

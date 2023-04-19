@@ -1,6 +1,6 @@
-import { defineComponent as S, ref as r, watch as f, toRaw as d, onMounted as B, openBlock as T, createElementBlock as C, Fragment as b, createElementVNode as h, renderSlot as w } from "vue";
-import _ from "treeselectjs";
-const x = ["value", "id"], N = S({
+import { defineComponent as S, ref as r, watch as f, toRaw as c, onMounted as T, onUnmounted as B, openBlock as w, createElementBlock as C, Fragment as b, createElementVNode as h, renderSlot as _ } from "vue";
+import x from "treeselectjs";
+const N = ["value", "id"], E = S({
   name: "Treeselect",
   props: {
     value: {
@@ -98,24 +98,16 @@ const x = ["value", "id"], N = S({
   },
   emits: ["input", "open", "close", "name-change"],
   setup(e, { emit: n }) {
-    const o = r(null), i = r(null), l = r(null), y = (t) => {
-      n("input", t);
-    }, p = (t) => {
-      n("open", t);
-    }, g = (t) => {
-      n("close", t);
-    }, m = (t) => {
-      n("name-change", t);
-    };
+    const o = r(null), i = r(null), l = r(null), y = (t) => n("input", t), p = (t) => n("open", t), g = (t) => n("close", t), m = (t) => n("name-change", t);
     return f(
       () => e,
       (t) => {
         if (l.value) {
-          const a = d(l.value), s = d(t);
+          const a = c(l.value), s = c(t);
           let u = !1;
-          Object.keys(s).forEach((c) => {
-            const v = s[c] === a[c];
-            !x.includes(c) && !v && (a[c] = s[c], u = !0);
+          Object.keys(s).forEach((d) => {
+            const v = s[d] === a[d];
+            !N.includes(d) && !v && (a[d] = s[d], u = !0);
           }), u && a.mount();
         }
       },
@@ -124,7 +116,7 @@ const x = ["value", "id"], N = S({
       () => e.value,
       (t) => {
         if (l.value) {
-          const a = d(l.value), s = d(t);
+          const a = c(l.value), s = c(t);
           JSON.stringify(a.value) !== JSON.stringify(s) && a.updateValue(s);
         }
       }
@@ -132,14 +124,14 @@ const x = ["value", "id"], N = S({
       () => e.id,
       (t) => {
         if (l.value) {
-          const a = d(l.value);
+          const a = c(l.value);
           (a.id || t) && (a.id = t ?? "", a.mount());
         }
       }
-    ), B(() => {
+    ), T(() => {
       if (!o.value)
         throw new Error("Treeselect container ref is not defined");
-      l.value = new _({
+      l.value = new x({
         parentHtmlContainer: o.value,
         value: e.value,
         options: e.options,
@@ -172,29 +164,31 @@ const x = ["value", "id"], N = S({
         listSlotHtmlComponent: i.value ?? null,
         iconElements: e.iconElements
       });
+    }), B(() => {
+      l.value && c(l.value).destroy();
     }), {
       treeselectContainerRef: o,
       treeselectAfterListSlotRef: i
     };
   }
-}), E = (e, n) => {
+}), O = (e, n) => {
   const o = e.__vccOpts || e;
   for (const [i, l] of n)
     o[i] = l;
   return o;
-}, L = { ref: "treeselectContainerRef" }, O = {
+}, V = { ref: "treeselectContainerRef" }, L = {
   ref: "treeselectAfterListSlotRef",
   class: "treeselect__after-list-slot"
 };
-function V(e, n, o, i, l, y) {
-  return T(), C(b, null, [
-    h("div", L, null, 512),
-    h("div", O, [
-      w(e.$slots, "afterList")
+function R(e, n, o, i, l, y) {
+  return w(), C(b, null, [
+    h("div", V, null, 512),
+    h("div", L, [
+      _(e.$slots, "default")
     ], 512)
   ], 64);
 }
-const A = /* @__PURE__ */ E(N, [["render", V]]);
+const P = /* @__PURE__ */ O(E, [["render", R]]);
 export {
-  A as default
+  P as default
 };
