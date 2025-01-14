@@ -21,7 +21,7 @@ export type TreeselectValue = ValueInputType
 const keysWithoutRender = ['modelValue', 'options', 'id', 'iconElements']
 
 export default defineComponent({
-  name: 'Treeselect',
+  name: 'VueTreeselect',
   props: {
     modelValue: {
       type: [Array, Number, String] as PropType<TreeselectValue>,
