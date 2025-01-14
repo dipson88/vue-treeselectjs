@@ -29,8 +29,8 @@ import 'vue-treeselectjs/dist/vue-treeselectjs.css'
 
 Import treeselectjs (UMD)
 ```
-<script src="https://cdn.jsdelivr.net/npm/vue-treeselectjs@0.6.1/dist/vue-treeselectjs.umd.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-treeselectjs@0.6.1/dist/vue-treeselectjs.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue-treeselectjs@0.6.2/dist/vue-treeselectjs.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-treeselectjs@0.6.2/dist/vue-treeselectjs.css" />
 ```
 
 All Available Imports

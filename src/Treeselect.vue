@@ -216,6 +216,9 @@ export default defineComponent({
           const rawTreeselect = toRaw(treeselect.value)
           rawTreeselect.options = props.options
           rawTreeselect.mount()
+
+          // Update value after options change
+          rawTreeselect.updateValue(props.modelValue)
         }
       }
     )
