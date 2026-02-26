@@ -33,9 +33,13 @@ import Treeselect, {
 
 export type { IconsType, DirectionType, OptionType, TagsSortItem } from 'treeselectjs'
 
+/** Value type for v-model and emitted events: single id, array of ids, or null/undefined. */
 export type TreeselectValue = ValueInputType
 
-/** Params from ITreeselectParams that are not passed as Vue props (container, slot, callbacks) */
+/**
+ * Keys from ITreeselectParams that are not exposed as Vue props.
+ * The component provides these internally (container, slot, callbacks).
+ */
 type TreeselectOmittedParams =
   | 'parentHtmlContainer'
   | 'listSlotHtmlComponent'
@@ -46,11 +50,21 @@ type TreeselectOmittedParams =
   | 'searchCallback'
   | 'openCloseGroupCallback'
 
+/**
+ * Props for the Vue Treeselect component.
+ * Mirrors ITreeselectParams except: uses `modelValue` instead of `value` for v-model,
+ * and omits container/slot/callback params (handled internally).
+ * @see ITreeselectParams in treeselectjs for full option descriptions
+ */
 export type VueTreeselectProps = Omit<ITreeselectParams, TreeselectOmittedParams | 'value'> & {
+  /** Bound value (v-model). Single id, array of ids, or null/undefined. */
   modelValue?: TreeselectValue
 }
 
-/** Vue props from ITreeselectParams with default values */
+/**
+ * Builds Vue prop definitions from ITreeselectParams with default values.
+ * Used by the component to declare its props.
+ */
 const buildTreeselectProps = (): ComponentObjectPropsOptions<VueTreeselectProps> => {
   const props: Record<keyof VueTreeselectProps, { type: unknown; default: unknown }> = {
     modelValue: { type: [Array, Number, String] as PropType<TreeselectValue>, default: () => [] },
@@ -90,8 +104,16 @@ const buildTreeselectProps = (): ComponentObjectPropsOptions<VueTreeselectProps>
   return props as ComponentObjectPropsOptions<VueTreeselectProps>
 }
 
+/** Props that require a full re-mount when changed (not just property update). */
 const keysWithoutRender = ['modelValue', 'options', 'id', 'iconElements']
 
+/**
+ * Vue 3 wrapper for treeselectjs: hierarchical single/multi select with tags and search.
+ * All options from ITreeselectParams are supported as props (except value → use modelValue).
+ * Emits: update:modelValue, input, open, close, name-change, search, open-close-group.
+ * @see https://github.com/dipson88/vue-treeselectjs
+ * @see ITreeselectParams in treeselectjs for option details
+ */
 export default defineComponent({
   name: 'VueTreeselect',
   props: buildTreeselectProps(),
