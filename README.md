@@ -32,7 +32,7 @@ import Treeselect from 'vue-treeselectjs'
 import 'vue-treeselectjs/dist/vue-treeselectjs.css'
 ```
 
-Import treeselectjs (UMD)
+Import vue-treeselectjs (UMD)
 ```
 <!DOCTYPE html>
 <html>
@@ -155,9 +155,9 @@ export default defineComponent({
       }
     ])
 
-    const value = ref<TreeselectValue>([3])
+    const modelValue = ref<TreeselectValue>([3])
 
-    // Also for value type, you can use value: string | number | (string | number)[] | null
+    // Also for value type, you can use: string | number | (string | number)[] | null
     const onInput = (value: TreeselectValue) => {
       console.log('onInput', value)
     }
@@ -165,7 +165,7 @@ export default defineComponent({
     return {
       onInput,
       options,
-      value
+      modelValue
     }
   }
 })
@@ -178,7 +178,7 @@ export default defineComponent({
 #### Core props
 Name  | Type (default) | Description
 ------------- | ------------- | -------------
-**model-value**  | Array[String \| Number] ([]) | An array of `value` from `options` prop. This value will be selected on load of the treeselect. The `value` changes if you check/uncheck checkboxes or remove tags from the input.
+**model-value**  | Array[String \| Number] \| String \| Number \| null ([]) | Selected value(s): array of ids (multi-select) or single id (single-select with `isSingleSelect`). Selected on load; updates when checkboxes/tags change.
 **options**  | Array[Object] ([]) | It is an array of objects ```{name: String, value: String \| Number, disabled?: Boolean, htmlAttr?: object, isGroupSelectable?: boolean, children: [] }```, where children are the same array of objects. Do not use duplicated `value` field. But you can use duplicated names. [Read more](#option-description).
 **disabled** | Boolean (false) | List will be disabled.
 **id** | String ('') | id attribute for the accessibility.
@@ -195,9 +195,9 @@ Name  | Type (default) | Description
 **disabledBranchNode** | Boolean (false) | It is impossible to select groups. You can select only leaves.
 **openLevel**  | Number (0) | All groups will be opened to this level.
 **appendToBody**  | Boolean (false) | List will be appended to the body instead of the input container.
-**alwaysOpen**  | Boolean (false) | List will be always opened. You can use it for comfortable style changing. If you what to use it as an opened list, turn `staticList` to `true`.
+**alwaysOpen**  | Boolean (false) | List will be always opened. You can use it for comfortable style changing. If you want to use it as an opened list, turn `staticList` to `true`.
 **staticList** | Boolean (false) | Add the list as a static DOM element. List doesn't overlap content. This prop will be ignored if you use `appendToBody`.
-**emptyText** | String ('No results found...') | A empty list text.
+**emptyText** | String ('No results found...') | Empty list text.
 **direction** | String (auto) | A force direction for the list. Supported values: `auto`, `top`, `bottom`.
 **expandSelected** | Boolean (false) | All groups which have checked values will be expanded on the init.
 **saveScrollPosition** | Boolean (true) | The list saves the last scroll position before close. If you open the list your scroll will be on the previous position. If you set the value to `false` - the scroll will have position 0 and the first item will be focused every time.
@@ -207,7 +207,7 @@ Name  | Type (default) | Description
 Name  | Type (default) | Description
 ------------- | ------------- | -------------
 **showTags**  | Boolean (true) | Selected values look like tags. The false value shows results as '{count} elements selected'. You can change text if you use `tagsCountText` prop. For one selected element, you will see a name of this element.
-**tagsCountText**  | String ('elements selected') | This text will be shown if you use 'showTags'. This text will be inserted after the count of the selected elements - ```'{count} {tagsCountText}'```.
+**tagsCountText**  | String ('elements selected') | Shown when `showTags` is false, after the count: `'{count} {tagsCountText}'`.
 **tagsSortFn** | `(a: TagsSortItem, b: TagsSortItem) => number` \| `null` (null) | Defines the sorting order for tags in the input field.<br>`TagsSortItem` - `{ value: ValueOptionType, name: string }`.
 **showCount** | Boolean (false) | Shows count of children near the group's name.
 **clearable**  | Boolean (true) | Clear icon is available.
@@ -218,12 +218,13 @@ Name  | Type (default) | Description
 #### Emits
 Name  | Type (default) | Description
 ------------- | ------------- | -------------
-**input** | (value) => void (undefined) | Returns selected values, action is triggered on change the list value.
-**open** | (value) => void (undefined) | Returns selected values, action is triggered on opening the list.
-**close** | (value) => void (undefined) | Returns selected values, action is triggered on closing the list.
-**name-change** | (name) => void (undefined) | Returns selected name inside the input, action is triggered on on change the list.
-**search**  | (value) => void (undefined) | Returns entered search value, action is triggered on change search value during the typing. You can try create something like autocomplete with help of this emit.
-**open-close-group** | ({ groupId, isClosed }: { groupId: ValueOptionType, isClosed: boolean }) => void (undefined) | Returns groupId and closed/open status of this group, action is triggered on open/close group in the list.
+**update:modelValue** | (value) => void (undefined) | Emitted when the selection changes (used by `v-model`).
+**input** | (value) => void (undefined) | Returns selected values when the list value changes.
+**open** | (value) => void (undefined) | Returns selected values when the list is opened.
+**close** | (value) => void (undefined) | Returns selected values when the list is closed.
+**name-change** | (name) => void (undefined) | Returns the selected name in the input when it changes.
+**search**  | (value) => void (undefined) | Returns the search string when the user types. You can build autocomplete with this emit.
+**open-close-group** | ({ groupId, isClosed }: { groupId: ValueOptionType, isClosed: boolean }) => void (undefined) | Returns groupId and open/closed status when a group is expanded or collapsed.
 
 #### Additional props
 Name  | Type (default) | Description
@@ -240,7 +241,7 @@ Name  | Type (default) | Description
 ---
 
 ### Option description
-Is is description of the one option of the [`options`](#core-props) prop:
+This is the shape of one option in the [`options`](#core-props) prop:
 Name  | Type | Description
 ------------- | ------------- | -------------
 **value** | String \| Number (required!) | It is a value of the node. **It should be unique!**
@@ -297,7 +298,7 @@ body {
 
 ### Notes
 1) If you want to change the padding of the element you can use CSS selector. I've added **'group'** and **'level'** attributes, but you have to use **!important**.
-2) Do not use **duplicated** values for the options. You will see a error with duplicated values. But you can use duplicated names.
+2) Do not use **duplicated** values for the options. You will see an error with duplicated values. But you can use duplicated names.
 3) **Value** prop inside the **options** prop should be a **String** or **Number**.
 4) If you use **isSingleSelect** prop, you should pass only a single **value** without an array.
 5) If you use **isSingleSelect** prop, you can set **showTags** to false. It helps to show treeselect as a dropdown. Also you can disable selecting of group's nodes with help of **disabledBranchNode**.
