@@ -11,137 +11,100 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, onUnmounted, PropType, ref, toRaw, watch } from 'vue'
-import Treeselect, { IconsType, DirectionType, OptionType, ValueInputType, TagsSortItem } from 'treeselectjs'
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  ref,
+  toRaw,
+  type ComponentObjectPropsOptions,
+  type PropType,
+  watch,
+} from 'vue'
+import Treeselect, {
+  type DirectionType,
+  type ITreeselectParams,
+  type IconsType,
+  type OptionType,
+  type TagsSortItem,
+  type ValueInputType,
+} from 'treeselectjs'
 
-export { type IconsType, type DirectionType, type OptionType, type TagsSortItem } from 'treeselectjs'
+export type { IconsType, DirectionType, OptionType, TagsSortItem } from 'treeselectjs'
 
 export type TreeselectValue = ValueInputType
+
+/** Params from ITreeselectParams that are not passed as Vue props (container, slot, callbacks) */
+type TreeselectOmittedParams =
+  | 'parentHtmlContainer'
+  | 'listSlotHtmlComponent'
+  | 'inputCallback'
+  | 'openCallback'
+  | 'closeCallback'
+  | 'nameChangeCallback'
+  | 'searchCallback'
+  | 'openCloseGroupCallback'
+
+export type VueTreeselectProps = Omit<ITreeselectParams, TreeselectOmittedParams | 'value'> & {
+  modelValue?: TreeselectValue
+}
+
+/** Vue props from ITreeselectParams with default values */
+const buildTreeselectProps = (): ComponentObjectPropsOptions<VueTreeselectProps> => {
+  const props: Record<keyof VueTreeselectProps, { type: unknown; default: unknown }> = {
+    modelValue: { type: [Array, Number, String] as PropType<TreeselectValue>, default: () => [] },
+    options: { type: Array as PropType<OptionType[]>, default: () => [] },
+    openLevel: { type: Number, default: 0 },
+    appendToBody: { type: Boolean, default: false },
+    alwaysOpen: { type: Boolean, default: false },
+    showTags: { type: Boolean, default: true },
+    tagsCountText: { type: String, default: 'elements selected' },
+    tagsSortFn: {
+      type: Function as PropType<(a: TagsSortItem, b: TagsSortItem) => number>,
+      default: null,
+    },
+    clearable: { type: Boolean, default: true },
+    searchable: { type: Boolean, default: true },
+    placeholder: { type: String, default: 'Select...' },
+    grouped: { type: Boolean, default: true },
+    isGroupedValue: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
+    emptyText: { type: String, default: 'No results found...' },
+    staticList: { type: Boolean, default: false },
+    id: { type: String, default: '' },
+    ariaLabel: { type: String, default: '' },
+    isSingleSelect: { type: Boolean, default: false },
+    showCount: { type: Boolean, default: false },
+    disabledBranchNode: { type: Boolean, default: false },
+    direction: { type: String as PropType<DirectionType>, default: 'auto' },
+    expandSelected: { type: Boolean, default: false },
+    saveScrollPosition: { type: Boolean, default: true },
+    isIndependentNodes: { type: Boolean, default: false },
+    rtl: { type: Boolean, default: false },
+    listClassName: { type: String, default: '' },
+    isBoostedRendering: { type: Boolean, default: false },
+    iconElements: { type: Object as PropType<Partial<IconsType>>, default: () => ({}) },
+  }
+
+  return props as ComponentObjectPropsOptions<VueTreeselectProps>
+}
 
 const keysWithoutRender = ['modelValue', 'options', 'id', 'iconElements']
 
 export default defineComponent({
   name: 'VueTreeselect',
-  props: {
-    modelValue: {
-      type: [Array, Number, String] as PropType<TreeselectValue>,
-      default: () => []
-    },
-    options: {
-      type: Array as PropType<OptionType[]>,
-      default: () => []
-    },
-    openLevel: {
-      type: Number,
-      default: 0
-    },
-    appendToBody: {
-      type: Boolean,
-      default: false
-    },
-    alwaysOpen: {
-      type: Boolean,
-      default: false
-    },
-    showTags: {
-      type: Boolean,
-      default: true
-    },
-    tagsCountText: {
-      type: String,
-      default: 'elements selected'
-    },
-    tagsSortFn: {
-      type: Function as PropType<(a: TagsSortItem, b: TagsSortItem) => number> | null,
-      default: null
-    },
-    clearable: {
-      type: Boolean,
-      default: true
-    },
-    searchable: {
-      type: Boolean,
-      default: true
-    },
-    placeholder: {
-      type: String,
-      default: 'Select...'
-    },
-    grouped: {
-      type: Boolean,
-      default: true
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    emptyText: {
-      type: String,
-      default: 'No results found...'
-    },
-    staticList: {
-      type: Boolean,
-      default: false
-    },
-    id: {
-      type: String,
-      default: ''
-    },
-    ariaLabel: {
-      type: String,
-      default: ''
-    },
-    isSingleSelect: {
-      type: Boolean,
-      default: false
-    },
-    showCount: {
-      type: Boolean,
-      default: false
-    },
-    isGroupedValue: {
-      type: Boolean,
-      default: false
-    },
-    disabledBranchNode: {
-      type: Boolean,
-      default: false
-    },
-    direction: {
-      type: String as PropType<DirectionType>,
-      default: 'auto'
-    },
-    expandSelected: {
-      type: Boolean,
-      default: false
-    },
-    saveScrollPosition: {
-      type: Boolean,
-      default: true
-    },
-    isIndependentNodes: {
-      type: Boolean,
-      default: false
-    },
-    rtl: {
-      type: Boolean,
-      default: false
-    },
-    isBoostedRendering: {
-      type: Boolean,
-      default: false
-    },
-    listClassName: {
-      type: String,
-      default: ''
-    },
-    iconElements: {
-      type: Object as PropType<Partial<IconsType>>,
-      default: () => ({})
-    }
+  props: buildTreeselectProps(),
+  emits: {
+    'update:modelValue': (_value: TreeselectValue) => true,
+    input: (_value: TreeselectValue) => true,
+    open: (_value: TreeselectValue) => true,
+    close: (_value: TreeselectValue) => true,
+    'name-change': (_name: string) => true,
+    search: (_value: string) => true,
+    'open-close-group': (_payload: { groupId: TreeselectValue; isClosed: boolean }) => true,
   },
-  emits: ['input', 'open', 'close', 'name-change', 'search', 'open-close-group', 'update:modelValue'],
-  setup(props, { emit }) {
+  setup(props: VueTreeselectProps, { emit }) {
     const treeselectContainerRef = ref<HTMLElement | null>(null)
     const treeselectAfterListSlotRef = ref<HTMLElement | null>(null)
     const treeselect = ref<Treeselect | null>(null)
@@ -157,7 +120,7 @@ export default defineComponent({
     const onOpenCloseGroup = (groupId: TreeselectValue, isClosed: boolean) =>
       emit('open-close-group', {
         groupId,
-        isClosed
+        isClosed,
       })
 
     const valueString = computed(() => JSON.stringify(props.modelValue))
@@ -173,12 +136,12 @@ export default defineComponent({
           let isAnyChanged = false
 
           Object.keys(rawProps).forEach((key) => {
-            // @ts-ignore
+            // @ts-expect-error
             const isTheSameValue = rawProps[key] === rawTreeselect[key]
             const isWithRender = keysWithoutRender.includes(key)
 
             if (!isWithRender && !isTheSameValue) {
-              // @ts-ignore
+              // @ts-expect-error
               rawTreeselect[key] = rawProps[key]
               isAnyChanged = true
             }
@@ -189,7 +152,7 @@ export default defineComponent({
           }
         }
       },
-      { deep: true }
+      { deep: true },
     )
 
     watch(
@@ -199,7 +162,7 @@ export default defineComponent({
           const rawTreeselect = toRaw(treeselect.value)
           rawTreeselect.updateValue(props.modelValue)
         }
-      }
+      },
     )
 
     watch(
@@ -214,7 +177,7 @@ export default defineComponent({
             rawTreeselect.mount()
           }
         }
-      }
+      },
     )
 
     watch(
@@ -222,13 +185,13 @@ export default defineComponent({
       () => {
         if (treeselect.value) {
           const rawTreeselect = toRaw(treeselect.value)
-          rawTreeselect.options = props.options
+          rawTreeselect.options = props.options ?? []
           rawTreeselect.mount()
 
           // Update value after options change
           rawTreeselect.updateValue(props.modelValue)
         }
-      }
+      },
     )
 
     watch(
@@ -238,11 +201,11 @@ export default defineComponent({
           const rawTreeselect = toRaw(treeselect.value)
           rawTreeselect.iconElements = {
             ...rawTreeselect.iconElements,
-            ...props.iconElements
+            ...props.iconElements,
           }
           rawTreeselect.mount()
         }
-      }
+      },
     )
 
     onMounted(() => {
@@ -250,47 +213,20 @@ export default defineComponent({
         throw new Error('Treeselect container ref is not defined')
       }
 
-      treeselect.value = new Treeselect({
+      const { modelValue, ...restProps } = props
+      const params: ITreeselectParams = {
+        ...restProps,
+        value: modelValue,
         parentHtmlContainer: treeselectContainerRef.value,
-        value: props.modelValue,
-        options: props.options,
-        openLevel: props.openLevel,
-        appendToBody: props.appendToBody,
-        alwaysOpen: props.alwaysOpen,
-        showTags: props.showTags,
-        tagsCountText: props.tagsCountText,
-        tagsSortFn: props.tagsSortFn,
-        clearable: props.clearable,
-        searchable: props.searchable,
-        placeholder: props.placeholder,
-        grouped: props.grouped,
-        disabled: props.disabled,
-        emptyText: props.emptyText,
-        staticList: props.staticList,
-        id: props.id,
-        ariaLabel: props.ariaLabel,
-        isSingleSelect: props.isSingleSelect,
-        showCount: props.showCount,
-        isGroupedValue: props.isGroupedValue,
-        disabledBranchNode: props.disabledBranchNode,
-        direction: props.direction,
-        expandSelected: props.expandSelected,
-        saveScrollPosition: props.saveScrollPosition,
-        isIndependentNodes: props.isIndependentNodes,
-        rtl: props.rtl,
-        isBoostedRendering: props.isBoostedRendering,
-        listClassName: props.listClassName,
+        listSlotHtmlComponent: treeselectAfterListSlotRef.value ?? null,
         inputCallback: onInput,
         openCallback: onOpen,
         closeCallback: onClose,
         nameChangeCallback: onNameChange,
         searchCallback: onSearch,
         openCloseGroupCallback: onOpenCloseGroup,
-        // We need a HTMLElement as a prop here. It is an additional component at the end of list.
-        // We gets HTMLElement from refs. Vue events work fine.
-        listSlotHtmlComponent: treeselectAfterListSlotRef.value ?? null,
-        iconElements: props.iconElements
-      })
+      }
+      treeselect.value = new Treeselect(params)
     })
 
     onUnmounted(() => {
@@ -302,9 +238,9 @@ export default defineComponent({
 
     return {
       treeselectContainerRef,
-      treeselectAfterListSlotRef
+      treeselectAfterListSlotRef,
     }
-  }
+  },
 })
 </script>
 

@@ -38,9 +38,9 @@ Import treeselectjs (UMD)
 <html>
   <head>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/treeselectjs@0.13.3/dist/treeselectjs.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue-treeselectjs@0.8.3/dist/vue-treeselectjs.umd.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-treeselectjs@0.8.3/dist/vue-treeselectjs.css" />
+    <script src="https://cdn.jsdelivr.net/npm/treeselectjs@0.14.0/dist/treeselectjs.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-treeselectjs@0.9.0/dist/vue-treeselectjs.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-treeselectjs@0.9.0/dist/vue-treeselectjs.css" />
   </head>
   <body>
       <div id="app">
@@ -212,7 +212,7 @@ Name  | Type (default) | Description
 **showCount** | Boolean (false) | Shows count of children near the group's name.
 **clearable**  | Boolean (true) | Clear icon is available.
 **searchable**  | Boolean (true) | Search is available.
-**placeholder**  | String ('Search...') | Placeholder text.
+**placeholder**  | String ('Select...') | Placeholder text.
 **grouped** | Boolean (true) | Show groups in the input and group leafs if all group selected.
 
 #### Emits
@@ -249,6 +249,49 @@ Name  | Type | Description
 **htmlAttr** | Object (optional) | The object of the HTML attributes, the value of the object should be a String type. These attributes will be merged into the node HTML tag.
 **isGroupSelectable** | Boolean (optional - true) | Determines whether groups are selectable. This behavior is similar to the disabledBranchNode prop but applies specifically to groups. It does not affect regular (non-group) items.
 **children** | {name: String, value: String, disabled?: Boolean, htmlAttr?: object, children: [] }[] | Children are the same array of objects.
+
+---
+
+### Customizing colors
+
+The component uses CSS custom properties (variables) for colors. Override them on the `.treeselect` container to match your theme:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--treeselect-border-color` | `#d7dde4` | Border color of input and list |
+| `--treeselect-bg` | `#ffffff` | Background of the input |
+| `--treeselect-border-focus` | `#101010` | Border color when focused |
+| `--treeselect-tag-bg` | `#d7dde4` | Background of selected tags |
+| `--treeselect-tag-bg-hover` | `#c5c7cb` | Tag background on hover |
+| `--treeselect-tag-remove-hover` | `#eb4c42` | Remove (×) icon color on hover |
+| `--treeselect-icon` | `#c5c7cb` | Arrow and clear icons |
+| `--treeselect-icon-hover` | `#838790` | Icons on hover |
+| `--treeselect-item-counter` | `#838790` | Group item count text |
+| `--treeselect-item-focus-bg` | `#f0ffff` | List item background when focused |
+| `--treeselect-item-selected-bg` | `#e9f1f1` | List item background when selected |
+| `--treeselect-item-disabled-text` | `#c5cbca` | Disabled item text color |
+| `--treeselect-checkbox-bg` | `#ffffff` | Checkbox background |
+| `--treeselect-checkbox-border-color` | `#d7dde4` | Checkbox border color |
+| `--treeselect-checkbox-checked-bg` | `#52c67e` | Checkbox fill when checked |
+| `--treeselect-checkbox-checked-icon` | `#ffffff` | Checkmark color |
+
+Example:
+
+```css
+body {
+  .treeselect {
+    --treeselect-border-color: #444;
+    --treeselect-bg: #1e1e1e;
+    --treeselect-border-focus: #6cb6ff;
+    --treeselect-tag-bg: #333;
+    --treeselect-tag-bg-hover: #444;
+    --treeselect-item-focus-bg: #2a2a2a;
+    --treeselect-item-selected-bg: #2d3a3a;
+    --treeselect-checkbox-checked-bg: #52c67e;
+    /* override other variables as needed */
+  }
+}
+```
 
 ---
 
